@@ -1,7 +1,7 @@
 import express from 'express';
 import itemRoutes from './routes/itemRoutes';
 import loginRoutes from './routes/loginRoutes';
-import signupRoutes from './routes/loginRoutes';
+import signupRoutes from './routes/signupRoutes';
 import { errorHandler } from './middlewares/errorHandler';
 import cors from 'cors';
 
