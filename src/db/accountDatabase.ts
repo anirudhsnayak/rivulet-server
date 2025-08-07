@@ -40,7 +40,7 @@ export function createAccount(username: string, hash: string) {
   });
   // sanitize inputs and handle errors properly
   client.connect();
-  const query = 'INSERT INTO users (username, hash) VALUES ($1, $2) RETURNING *';
+  const query = 'INSERT INTO users (username, password_hash) VALUES ($1, $2) RETURNING *';
   const values = [username, hash];
   return client.query(query, values)
     .then(res => {
