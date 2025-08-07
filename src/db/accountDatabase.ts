@@ -37,6 +37,7 @@ export async function createAccount(username: string, hash: string) {
   // sanitize inputs and handle errors properly
   client.connect();
   const query = 'INSERT INTO users (username, password_hash) VALUES ($1, $2) RETURNING *';
+  // console.log(`Executing query: ${query} with values: ${username}, ${hash}`);
   const values = [username, hash];
   const result = await client.query(query, values);
   client.end();
