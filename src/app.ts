@@ -1,6 +1,7 @@
 import express from 'express';
 import itemRoutes from './routes/itemRoutes';
 import loginRoutes from './routes/loginRoutes';
+import signupRoutes from './routes/loginRoutes';
 import { errorHandler } from './middlewares/errorHandler';
 import cors from 'cors';
 
@@ -15,6 +16,7 @@ app.use(cors({
 
 // Routes
 app.use('/api/login', loginRoutes);
+app.use('/api/signup', signupRoutes);
 app.use('/api/items', itemRoutes);
 
 // Global error handler (should be after routes)
