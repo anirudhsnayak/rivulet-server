@@ -13,7 +13,7 @@ export function loginAccount( username: string, hash: string) {
   });
 
   client.connect();
-  const query = 'SELECT * FROM users WHERE username = $1 AND hash = $2';
+  const query = 'SELECT * FROM users WHERE username = $1 AND password_hash = $2';
   const values = [username, hash];  
   return client.query(query, values)
     .then(res => {
