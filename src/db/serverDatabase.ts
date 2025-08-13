@@ -15,3 +15,15 @@ export async function createServer(user_id: number, serverName: string) {
         member: membersResult.rows.length > 0
     };
 }
+
+export async function getServersByUserId(user_id: number) {
+    const query = `
+        SELECT s.server_id, s.name
+        FROM servers s
+        JOIN server_members sm ON s.server_id = sm.server_id
+        WHERE sm.user_id = $1
+    `;
+    const values = [user_id];
+    const result = await DatabaseClient.query(query, values);
+    return result.rows;
+}

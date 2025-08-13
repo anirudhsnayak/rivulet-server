@@ -1,7 +1,7 @@
 import express from 'express';
-import itemRoutes from './routes/itemRoutes';
 import loginRoutes from './routes/loginRoutes';
 import signupRoutes from './routes/signupRoutes';
+import userRoutes from './routes/userRoutes';
 import { errorHandler } from './middlewares/errorHandler';
 import cors from 'cors';
 import DatabaseClient from './db/DatabaseClient';
@@ -21,12 +21,9 @@ app.use(cors({
 // Routes
 app.use('/api/login', loginRoutes);
 app.use('/api/signup', signupRoutes);
-app.use('/api/items', itemRoutes);
+app.use('/api/user', userRoutes);
 
 // Global error handler (should be after routes)
 app.use(errorHandler);
-
-import { createServer } from './db/serverDatabase';
-createServer(1, "Default Server");
 
 export default app;
