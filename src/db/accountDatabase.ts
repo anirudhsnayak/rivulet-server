@@ -14,3 +14,10 @@ export async function createAccount(username: string, hash: string) {
   const result = await DatabaseClient.query(query, values);
   return result.rows.length > 0;
 }
+
+export async function getUserId(username: string) {
+  const query = 'SELECT user_id FROM users WHERE username = $1';
+  const values = [username];
+  const result = await DatabaseClient.query(query, values);
+  return result.rows[0]?.user_id;
+}
