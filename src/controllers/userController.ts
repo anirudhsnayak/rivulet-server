@@ -4,6 +4,7 @@ import { getServersByUserId } from '../db/serverDatabase';
 export async function getUserModel(req: Request, res: Response, next: NextFunction) {
     try {
         const { userId } = req.session;
+        console.log(`Fetching user model for user id: ${req.session.userId}`);
         if (!userId) {
             return res.status(401).json({ message: 'User not authenticated' });
         }

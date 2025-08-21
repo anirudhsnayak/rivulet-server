@@ -14,7 +14,6 @@ const app = express();
 
 app.use(express.json());
 
-
 app.use(cors({
   origin: 'http://localhost:5173', // allow this frontend origin
   credentials: true // if using cookies/session
@@ -25,10 +24,9 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    httpOnly: true,
-    secure: true,        // set true if using HTTPS
-    sameSite: 'strict'   // prevents CSRF
-    // no maxAge → session cookie
+    httpOnly: true,  
+    secure: false,     // set true if using HTTPS
+    sameSite: 'lax',   // prevents CSRF
   }
 }));
 

@@ -8,6 +8,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
         
         if (isValid) {
             req.session.userId = await getUserId(username);
+            console.log(`User logged in: ${req.session.userId}`);
             res.status(200).json({ message: 'Login successful' });
         } else {
             res.status(401).json({ message: 'Invalid username or password' });
