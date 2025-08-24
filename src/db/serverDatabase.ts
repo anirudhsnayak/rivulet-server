@@ -1,4 +1,4 @@
-import DatabaseClient from './DatabaseClient';
+import DatabaseClient from '../client/DatabaseClient';
 
 export async function createServer(user_id: number, serverName: string) {
     const serversQuery = 'INSERT INTO servers (name) VALUES ($1) RETURNING *';

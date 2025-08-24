@@ -1,4 +1,4 @@
-import DatabaseClient from './DatabaseClient';
+import DatabaseClient from '../client/DatabaseClient';
 
 export async function loginAccount(username: string, hash: string) {
   const query = 'SELECT * FROM users WHERE username = $1 AND password_hash = $2';

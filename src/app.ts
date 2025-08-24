@@ -4,7 +4,7 @@ import signupRoutes from './routes/signupRoutes';
 import userRoutes from './routes/userRoutes';
 import { errorHandler } from './middlewares/errorHandler';
 import cors from 'cors';
-import DatabaseClient from './db/DatabaseClient';
+import DatabaseClient from './client/DatabaseClient';
 import session from 'express-session';
 
 // Initialize database connection
