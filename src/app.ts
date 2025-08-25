@@ -1,6 +1,6 @@
 import express from 'express';
-import loginRoutes from './routes/loginRoutes';
-import signupRoutes from './routes/signupRoutes';
+import channelRoutes from './routes/channelRoutes';
+import accountRoutes from './routes/accountRoutes';
 import userRoutes from './routes/userRoutes';
 import { errorHandler } from './middlewares/errorHandler';
 import cors from 'cors';
@@ -31,8 +31,8 @@ app.use(session({
 }));
 
 // Routes
-app.use('/api/login', loginRoutes);
-app.use('/api/signup', signupRoutes);
+app.use('/api/channel', channelRoutes);
+app.use('/api/account', accountRoutes);
 app.use('/api/user', userRoutes);
 
 // Global error handler (should be after routes)

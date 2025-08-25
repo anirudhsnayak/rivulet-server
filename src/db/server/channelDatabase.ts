@@ -1,6 +1,6 @@
-import DatabaseClient from '../client/DatabaseClient';
+import DatabaseClient from '../../client/DatabaseClient';
 
-export async function createChannel(channelName: string, serverId: string) {
+export async function createChannelDB(channelName: string, serverId: string) {
     const query = `
         WITH next AS (
             UPDATE channel_sequences
@@ -14,6 +14,13 @@ export async function createChannel(channelName: string, serverId: string) {
         RETURNING *;
     `;
     const values = [channelName, serverId];
+    const result = await DatabaseClient.query(query, values);
+    return result.rows[0];
+}
+
+export async function removeChannelDB(channelId: number, serverId: string) {
+    const query = 'DELETE FROM channels WHERE server_id = $1 AND channel_id = $2 RETURNING *';
+    const values = [serverId, channelId];
     const result = await DatabaseClient.query(query, values);
     return result.rows[0];
 }

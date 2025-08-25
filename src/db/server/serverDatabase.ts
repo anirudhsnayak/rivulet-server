@@ -1,7 +1,7 @@
-import DatabaseClient from '../client/DatabaseClient';
+import DatabaseClient from '../../client/DatabaseClient';
 
-export async function createServer(user_id: number, serverName: string) {
-    const serversQuery = 'INSERT INTO servers (name) VALUES ($1) RETURNING *';
+export async function createServerDB(user_id: number, serverName: string) {
+    const serversQuery = 'INSERT INTO servers (server_name) VALUES ($1) RETURNING *';
     const values = [serverName];
     const serversResult = await DatabaseClient.query(serversQuery, values);
 
@@ -18,7 +18,7 @@ export async function createServer(user_id: number, serverName: string) {
 
 export async function getServersByUserId(user_id: number) {
     const query = `
-        SELECT s.server_id, s.name
+        SELECT s.server_id, s.server_name
         FROM servers s
         JOIN server_members sm ON s.server_id = sm.server_id
         WHERE sm.user_id = $1
