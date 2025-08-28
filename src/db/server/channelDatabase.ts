@@ -1,11 +1,11 @@
 import DatabaseClient from '../../client/DatabaseClient';
 
-export async function createChannelDB(channelName: string, serverId: string) {
+export async function createChannelDB(channelName: string, serverId: number) {
     const query = `
         WITH next AS (
             UPDATE channel_sequences
             SET max_id = max_id + 1
-            WHERE server_id = $1
+            WHERE server_id = $2
             RETURNING max_id AS channel_id
         )
         INSERT INTO channels (name, server_id, channel_id)

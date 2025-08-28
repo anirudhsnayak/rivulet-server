@@ -3,7 +3,7 @@ import { createChannelDB, removeChannelDB } from '../../db/server/channelDatabas
 
 export async function createChannel(req: Request, res: Response, next: NextFunction) {
     try {
-        const { serverId, channelName } = req.body;
+        const { channelName, serverId } = req.body;
         let response = await createChannelDB(channelName, serverId);
         console.log('Channel created:', JSON.stringify(response));
         if (!response) return res.status(500).json({ message: 'Channel creation failed' });

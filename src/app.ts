@@ -6,6 +6,7 @@ import { errorHandler } from './middlewares/errorHandler';
 import cors from 'cors';
 import DatabaseClient from './client/DatabaseClient';
 import session from 'express-session';
+import "./websocket"
 
 // Initialize database connection
 DatabaseClient.init(); 
