@@ -1,19 +1,23 @@
 import DatabaseClient from '../../client/DatabaseClient';
+import { createLogger, Verbosity } from '../../config/debug';
 
-export async function createServerDB(user_id: number, serverName: string) {
-    const serversQuery = 'INSERT INTO servers (server_name) VALUES ($1) RETURNING *';
-    const values = [serverName];
+const logger = createLogger("serverDatabase", "database");
+
+export async function createServerDB(serverName: string, ownerId: number) {
+    // Insert into servers with ownerId
+    const serversQuery = 'INSERT INTO servers (server_name, owner_id) VALUES ($1, $2) RETURNING *';
+    const values = [serverName, ownerId];
     const serversResult = await DatabaseClient.query(serversQuery, values);
 
+    // Add owner as a member
+    const serverId = serversResult.rows[0].server_id;
     const membersQuery = 'INSERT INTO server_members (user_id, server_id) VALUES ($1, $2)';
-    const serverId = serversResult.rows[0].server_id; 
-    const memberValues = [user_id, serverId as string];
-    const membersResult = await DatabaseClient.query(membersQuery, memberValues);
+    const memberValues = [ownerId, serverId];
+    await DatabaseClient.query(membersQuery, memberValues);
 
-    return {
-        server: serversResult.rows[0],
-        member: membersResult.rows.length > 0
-    };
+    logger.log(`Server created with name: ${serverName} and ownerId: ${ownerId}`, Verbosity.MEDIUM);
+
+    return serversResult.rows[0];
 }
 
 export async function getServersByUserId(user_id: number) {
@@ -25,5 +29,8 @@ export async function getServersByUserId(user_id: number) {
     `;
     const values = [user_id];
     const result = await DatabaseClient.query(query, values);
+
+    logger.log(`Retrieved servers for user ID: ${user_id}`, Verbosity.MEDIUM);
+
     return result.rows;
 }

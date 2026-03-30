@@ -1,4 +1,5 @@
 import express from 'express';
+import serverRoutes from './routes/serverRoutes';
 import channelRoutes from './routes/channelRoutes';
 import accountRoutes from './routes/accountRoutes';
 import userRoutes from './routes/userRoutes';
@@ -6,7 +7,7 @@ import { errorHandler } from './middlewares/errorHandler';
 import cors from 'cors';
 import DatabaseClient from './client/DatabaseClient';
 import session from 'express-session';
-import "./websocket"
+// import "./websocket"
 
 // Initialize database connection
 DatabaseClient.init(); 
@@ -32,6 +33,7 @@ app.use(session({
 }));
 
 // Routes
+app.use('/api/server', serverRoutes);
 app.use('/api/channel', channelRoutes);
 app.use('/api/account', accountRoutes);
 app.use('/api/user', userRoutes);

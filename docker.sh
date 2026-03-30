@@ -12,5 +12,5 @@ docker run -d \
   -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD \
   -e POSTGRES_DB=$POSTGRES_DB \
   -p $POSTGRES_PORT:5432 \
-  -v rivulet-data:/var/lib/postgresql/data \
+  -v rivulet-data:/var/lib/postgresql \
   postgres:latest
