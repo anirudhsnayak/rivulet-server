@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { getServersByUserId } from '../db/server/serverDatabase';
 
+// this refers to /api/user 
 export async function getUserModel(req: Request, res: Response, next: NextFunction) {
     try {
         const userId = req.session.userId

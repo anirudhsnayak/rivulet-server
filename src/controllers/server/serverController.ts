@@ -17,7 +17,7 @@ export async function createServer(req: Request, res: Response, next: NextFuncti
         // Call database function to create server  
         const newServer = await createServerDB(serverName, ownerId);
         const userServers = await getServersByUserId(ownerId);
-        res.status(200).json({ servers: userServers });
+        res.status(200).json({ servers: userServers, created_server_id: newServer.server_id });
         logger.log(`Server created: ${JSON.stringify(newServer)}`, Verbosity.MEDIUM);
     } catch (error) {
         logger.log(`Error creating server: ${error}`, Verbosity.LOW);
