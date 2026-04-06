@@ -10,7 +10,6 @@ export async function getUserModel(req: Request, res: Response, next: NextFuncti
 
         const servers = await getServersByUserId(userId);
         if (!servers) return res.status(404).json({ message: 'No servers found for this user' });
-        req.session.currentServerId = servers.length > 0 ? servers[0].server_id : undefined;
 
         res.status(200).json({ servers: servers });
     } catch (error) {

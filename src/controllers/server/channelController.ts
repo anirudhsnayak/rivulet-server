@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { createChannelDB, removeChannelDB } from '../../db/server/channelDatabase';
+import { createChannelDB, removeChannelDB, getChannelsByServerIdDB } from '../../db/server/channelDatabase';
 import { createLogger, Verbosity } from "../../config/debug"
-import { log } from 'console';
 
 const logger = createLogger("channelController", "controller");
 
@@ -28,6 +27,20 @@ export async function removeChannel(req: Request, res: Response, next: NextFunct
         res.status(200).json({ channel: response });
     } catch (error) {
         logger.log(`Error removing channel: ${error}`, Verbosity.LOW);
+        next(error);
+    }
+}
+
+export async function getChannels(req: Request, res: Response, next: NextFunction) {
+    //only obtaining by server id for now, can add other query params later if needed
+    try {
+        const serverId = req.query.serverId as string;
+        if (!serverId) return res.status(400).json({ message: 'Server ID is required' });
+        const channels = await getChannelsByServerIdDB(parseInt(serverId));
+        logger.log(`Channels retrieved for server ID ${serverId}: ${JSON.stringify(channels)}`, Verbosity.MEDIUM);
+        res.status(200).json({ channels: channels });
+    } catch (error) {
+        logger.log(`Error retrieving channels: ${error}`, Verbosity.LOW);
         next(error);
     }
 }

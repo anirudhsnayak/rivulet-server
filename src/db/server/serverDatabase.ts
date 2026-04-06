@@ -1,7 +1,16 @@
+import { create } from 'domain';
 import DatabaseClient from '../../client/DatabaseClient';
 import { createLogger, Verbosity } from '../../config/debug';
 
 const logger = createLogger("serverDatabase", "database");
+
+export async function createChannelSequenceDB(serverId: number) {
+    const query = 'INSERT INTO channel_sequences (server_id, max_id) VALUES ($1, 0) RETURNING *';
+    const values = [serverId];
+    const result = await DatabaseClient.query(query, values);
+    logger.log(`Channel sequence created for server ID: ${serverId}`, Verbosity.MEDIUM);
+    return result.rows[0];
+}
 
 export async function createServerDB(serverName: string, ownerId: number) {
     // Insert into servers with ownerId
@@ -16,6 +25,8 @@ export async function createServerDB(serverName: string, ownerId: number) {
     await DatabaseClient.query(membersQuery, memberValues);
 
     logger.log(`Server created with name: ${serverName} and ownerId: ${ownerId}`, Verbosity.MEDIUM);
+
+    createChannelSequenceDB(serverId); // Initialize channel sequence for the new server
 
     return serversResult.rows[0];
 }
