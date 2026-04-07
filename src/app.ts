@@ -7,6 +7,7 @@ import { errorHandler } from './middlewares/errorHandler';
 import cors from 'cors';
 import DatabaseClient from './client/DatabaseClient';
 import session from 'express-session';
+import messageRoutes from './routes/messageRoutes';
 // import "./websocket"
 
 // Initialize database connection
@@ -36,6 +37,7 @@ app.use(session({
 app.use('/api/server', serverRoutes);
 app.use('/api/channel', channelRoutes);
 app.use('/api/account', accountRoutes);
+app.use('/api/message', messageRoutes);
 app.use('/api/user', userRoutes);
 
 // Global error handler (should be after routes)

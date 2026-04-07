@@ -1,7 +1,48 @@
 import DatabaseClient from '../../client/DatabaseClient';
+import { createLogger, Verbosity } from '../../config/debug';
 
-//todo: make a message interface
+//  Table "public.messages"
+//     Column    |            Type             | Collation | Nullable |      Default
+// --------------+-----------------------------+-----------+----------+-------------------      
+//  server_id    | integer                     |           | not null |
+//  channel_id   | integer                     |           | not null |
+//  message_id   | integer                     |           | not null |
+//  user_id      | integer                     |           | not null |
+//  message_text | character varying(1024)     |           | not null |
 
-export async function createMessage(serverId: number, channelId: number, userId: number, content: string) {
-    //TODO: Implement message creation logic
+const logger = createLogger("messageDatabase", "database");
+
+export async function createMessageDB(serverId: number, channelId: number, userId: number, content: string) {
+    logger.log(`Creating message: ${content}, in server ID: ${serverId}, channel ID: ${channelId} by user ID: ${userId}`, Verbosity.MEDIUM);
+    const query = `
+        WITH next AS (
+            UPDATE message_sequences
+            SET max_id = max_id + 1
+            WHERE server_id = $1 AND channel_id = $2
+            RETURNING max_id AS message_id
+        )
+        INSERT INTO messages (server_id, channel_id, message_id, user_id, message_text)
+        SELECT $1, $2, message_id, $3, $4
+        FROM next
+        RETURNING *;
+    `;
+    const values = [serverId, channelId, userId, content];
+    const result = await DatabaseClient.query(query, values);
+    return result.rows[0];
+}
+
+export async function getMessagesByChannelIdDB(serverId: number, channelId: number) {
+    logger.log(`Retrieving messages for server ID: ${serverId}, channel ID: ${channelId}`, Verbosity.MEDIUM);
+    const query = 'SELECT m.message_id, m.user_id, m.message_text, u.username FROM messages m JOIN users u ON m.user_id = u.user_id WHERE m.server_id = $1 AND m.channel_id = $2 ORDER BY m.message_id';
+    const values = [serverId, channelId];
+    const result = await DatabaseClient.query(query, values);
+    return result.rows;
+}
+
+export async function deleteMessageDB(serverId: number, channelId: number, messageId: number) {
+    logger.log(`Deleting message ID: ${messageId} in server ID: ${serverId}, channel ID: ${channelId}`, Verbosity.MEDIUM);
+    const query = 'DELETE FROM messages WHERE server_id = $1 AND channel_id = $2 AND message_id = $3 RETURNING *';
+    const values = [serverId, channelId, messageId];
+    const result = await DatabaseClient.query(query, values);
+    return result.rows[0];
 }

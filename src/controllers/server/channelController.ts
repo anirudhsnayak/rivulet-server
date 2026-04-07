@@ -37,7 +37,7 @@ export async function getChannels(req: Request, res: Response, next: NextFunctio
         const serverId = req.query.serverId as string;
         if (!serverId) return res.status(400).json({ message: 'Server ID is required' });
         const channels = await getChannelsByServerIdDB(parseInt(serverId));
-        logger.log(`Channels retrieved for server ID ${serverId}: ${JSON.stringify(channels)}`, Verbosity.MEDIUM);
+        logger.log(`Channels retrieved for server ID ${serverId}`, Verbosity.MEDIUM);
         res.status(200).json({ channels: channels });
     } catch (error) {
         logger.log(`Error retrieving channels: ${error}`, Verbosity.LOW);

@@ -10,7 +10,7 @@ export enum Verbosity {
 
 export const verbosityConfig: Record<string, Verbosity> = {
     controller: Verbosity.HIGH,
-    database: Verbosity.LOW,
+    database: Verbosity.HIGH,
     routes: Verbosity.MEDIUM,
     sse: Verbosity.MEDIUM,
     default: Verbosity.MEDIUM,
