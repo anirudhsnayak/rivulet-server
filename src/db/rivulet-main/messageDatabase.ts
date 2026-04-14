@@ -12,8 +12,10 @@ import { createLogger, Verbosity } from '../../config/debug';
 
 const logger = createLogger("messageDatabase", "database");
 
+//TODO: change the db to store user_id as author_id instead
 export async function createMessageDB(serverId: number, channelId: number, userId: number, content: string) {
     logger.log(`Creating message: ${content}, in server ID: ${serverId}, channel ID: ${channelId} by user ID: ${userId}`, Verbosity.MEDIUM);
+    //TODO: check that everything is valid (server/channel exists, user is a member of the server, etc.) before creating the message
     const query = `
         WITH next AS (
             UPDATE message_sequences
@@ -33,7 +35,7 @@ export async function createMessageDB(serverId: number, channelId: number, userI
 
 export async function getMessagesByChannelIdDB(serverId: number, channelId: number) {
     logger.log(`Retrieving messages for server ID: ${serverId}, channel ID: ${channelId}`, Verbosity.MEDIUM);
-    const query = 'SELECT m.message_id, m.user_id, m.message_text, u.username FROM messages m JOIN users u ON m.user_id = u.user_id WHERE m.server_id = $1 AND m.channel_id = $2 ORDER BY m.message_id';
+    const query = 'SELECT * FROM messages WHERE server_id = $1 AND channel_id = $2 ORDER BY message_id ASC';
     const values = [serverId, channelId];
     const result = await DatabaseClient.query(query, values);
     return result.rows;

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { createLogger, Verbosity } from '../../config/debug';
-import { createServerDB, getServersByUserId } from "../../db/server/serverDatabase";
+import { createServerDB, getServersByUserId } from "../../db/rivulet-main/serverDatabase";
 
 const logger = createLogger("serverController", "controller");
 

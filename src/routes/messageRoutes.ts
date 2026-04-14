@@ -1,8 +1,9 @@
 import { Router } from 'express';
-import { createMessage } from '../controllers/server/messageController';
+import { createMessage, getMessagesByChannelId } from '../controllers/rivulet-main/messageController';
 
 const router = Router();
 
 router.post('/', createMessage);
+router.get('/', getMessagesByChannelId);
 
 export default router;

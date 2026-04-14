@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { createChannelDB, removeChannelDB, getChannelsByServerIdDB } from '../../db/server/channelDatabase';
+import { createChannelDB, removeChannelDB, getChannelsByServerIdDB } from '../../db/rivulet-main/channelDatabase';
 import { createLogger, Verbosity } from "../../config/debug"
 
 const logger = createLogger("channelController", "controller");

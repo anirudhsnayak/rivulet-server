@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { getServersByUserId } from '../db/server/serverDatabase';
+import { getServersByUserId } from '../db/rivulet-main/serverDatabase';
 
 // this refers to /api/user 
 export async function getUserModel(req: Request, res: Response, next: NextFunction) {
