@@ -31,7 +31,7 @@ export async function createServerDB(serverName: string, ownerId: number) {
     return serversResult.rows[0];
 }
 
-export async function getServersByUserId(user_id: number) {
+export async function getServersByUserIdDB(user_id: number) {
     const query = `
         SELECT s.server_id, s.server_name
         FROM servers s
@@ -44,4 +44,44 @@ export async function getServersByUserId(user_id: number) {
     logger.log(`Retrieved servers for user ID: ${user_id}`, Verbosity.MEDIUM);
 
     return result.rows;
+}
+
+export async function getInviteCodeByServerIdDB(serverId: number) {
+    const query = 'SELECT invite_code FROM server_invites WHERE server_id = $1';
+    const values = [serverId];
+    const result = await DatabaseClient.query(query, values);
+
+    logger.log(`Retrieved invite code for server ID: ${serverId}`, Verbosity.MEDIUM);
+
+    if(!result.rows[0]) return null; // No invite code exists for this server
+    return result.rows[0]?.invite_code;
+}
+
+export async function createInviteCodeDB(serverId: number, inviteCode: string) {
+    const query = 'INSERT INTO server_invites (server_id, invite_code) VALUES ($1, $2) RETURNING *';
+    const values = [serverId, inviteCode];
+    const result = await DatabaseClient.query(query, values);
+
+    logger.log(`Created invite code for server ID: ${serverId}`, Verbosity.MEDIUM);
+
+    return result.rows[0];
+}
+
+export async function joinServerByInviteCodeDB(inviteCode: string, userId: number) {
+    const query = `
+        WITH server_info AS (
+            SELECT server_id
+            FROM server_invites
+            WHERE invite_code = $1
+        )
+        INSERT INTO server_members (user_id, server_id)
+        SELECT $2, server_id FROM server_info
+        RETURNING server_id
+    `;
+    const values = [inviteCode, userId];
+    const result = await DatabaseClient.query(query, values);
+
+    logger.log(`User ID: ${userId} joined server with invite code: ${inviteCode}`, Verbosity.MEDIUM);
+
+    return result.rows[0];
 }

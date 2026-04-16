@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { getServersByUserId } from '../db/rivulet-main/serverDatabase';
+import { getServersByUserIdDB } from '../db/rivulet-main/serverDatabase';
 
 // this refers to /api/user 
 export async function getUserModel(req: Request, res: Response, next: NextFunction) {
@@ -8,7 +8,7 @@ export async function getUserModel(req: Request, res: Response, next: NextFuncti
         if (!userId) return res.status(401).json({ message: 'User not authenticated' });
         console.log(`Fetching user model for user id: ${userId}`);
 
-        const servers = await getServersByUserId(userId);
+        const servers = await getServersByUserIdDB(userId);
         if (!servers) return res.status(404).json({ message: 'No servers found for this user' });
 
         res.status(200).json({ servers: servers });
