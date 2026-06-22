@@ -15,7 +15,7 @@ export async function createMessage(req : Request, res: Response, next: NextFunc
         }
         const newMessage = await createMessageDB(serverId, channelId, userId, messageText);
         logger.log(`Message created: ${JSON.stringify(newMessage)}`, Verbosity.MEDIUM);
-        res.status(200).json({ message: newMessage });
+        res.status(200).json(newMessage);
     }
     catch (error) {
         logger.log(`Error creating message: ${error}`, Verbosity.LOW);

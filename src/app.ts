@@ -1,5 +1,5 @@
 import express from 'express';
-import { channelRoutes, messageRoutes, serverRoutes, accountRoutes, userRoutes, memberRoutes } from './routes';
+import { channelRoutes, messageRoutes, serverRoutes, accountRoutes, userRoutes, memberRoutes, sseRoutes } from './routes';
 import { errorHandler } from './middlewares/errorHandler';
 import cors from 'cors';
 import DatabaseClient from './client/DatabaseClient';
@@ -36,6 +36,7 @@ app.use('/api/account', accountRoutes);
 app.use('/api/message', messageRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/member', memberRoutes);
+app.use('/api/sse', sseRoutes);
 
 // Global error handler (should be after routes)
 app.use(errorHandler);

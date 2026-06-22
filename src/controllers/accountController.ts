@@ -43,3 +43,20 @@ export async function signup(req: Request, res: Response, next: NextFunction) {
         next(error);
     }
 }
+
+export async function logout(req: Request, res: Response, next: NextFunction) {
+    try {
+        req.session.destroy((err) => {
+            if (err) {
+                logger.log(`Error during logout: ${err}`, Verbosity.LOW);
+                return res.status(500).json({ message: 'Logout failed' });
+            }
+            res.clearCookie('connect.sid');
+            logger.log(`User logged out successfully`, Verbosity.MEDIUM);
+            res.status(200).json({ message: 'Logout successful' });
+        });
+    } catch (error) {
+        logger.log(`Error during logout: ${error}`, Verbosity.LOW);
+        next(error);
+    }
+}

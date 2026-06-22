@@ -26,7 +26,7 @@ export async function createServerDB(serverName: string, ownerId: number) {
 
     logger.log(`Server created with name: ${serverName} and ownerId: ${ownerId}`, Verbosity.MEDIUM);
 
-    createChannelSequenceDB(serverId); // Initialize channel sequence for the new server
+    await createChannelSequenceDB(serverId); // Initialize channel sequence for the new server
 
     return serversResult.rows[0];
 }
@@ -82,6 +82,16 @@ export async function joinServerByInviteCodeDB(inviteCode: string, userId: numbe
     const result = await DatabaseClient.query(query, values);
 
     logger.log(`User ID: ${userId} joined server with invite code: ${inviteCode}`, Verbosity.MEDIUM);
+
+    return result.rows[0];
+}
+
+export async function leaveServerDB(userId: number, serverId: number) {
+    const query = 'DELETE FROM server_members WHERE user_id = $1 AND server_id = $2 RETURNING *';
+    const values = [userId, serverId];
+    const result = await DatabaseClient.query(query, values);
+
+    logger.log(`User ID: ${userId} left server ID: ${serverId}`, Verbosity.MEDIUM);
 
     return result.rows[0];
 }

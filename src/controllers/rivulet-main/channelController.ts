@@ -10,7 +10,7 @@ export async function createChannel(req: Request, res: Response, next: NextFunct
         let response = await createChannelDB(channelName, serverId);
         logger.log(`Channel created: ${JSON.stringify(response)}`, Verbosity.MEDIUM);
         if (!response) return res.status(500).json({ message: 'Channel creation failed' });
-        res.status(200).json({ channel: response });
+        res.status(200).json(response);
     } catch (error) {
         logger.log(`Error creating channel: ${error}`, Verbosity.LOW);
         next(error);

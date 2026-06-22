@@ -26,7 +26,8 @@ export async function createMessageDB(serverId: number, channelId: number, userI
         INSERT INTO messages (server_id, channel_id, message_id, user_id, message_text)
         SELECT $1, $2, message_id, $3, $4
         FROM next
-        RETURNING *;
+        RETURNING server_id AS guild_id, channel_id, message_id, user_id, message_text,
+                  (SELECT username FROM users WHERE user_id = $3) AS author_name;
     `;
     const values = [serverId, channelId, userId, content];
     const result = await DatabaseClient.query(query, values);
@@ -35,7 +36,14 @@ export async function createMessageDB(serverId: number, channelId: number, userI
 
 export async function getMessagesByChannelIdDB(serverId: number, channelId: number) {
     logger.log(`Retrieving messages for server ID: ${serverId}, channel ID: ${channelId}`, Verbosity.MEDIUM);
-    const query = 'SELECT * FROM messages WHERE server_id = $1 AND channel_id = $2 ORDER BY message_id ASC';
+    const query = `
+        SELECT m.server_id AS guild_id, m.channel_id, m.message_id, m.user_id, m.message_text,
+               COALESCE(u.username, 'user-' || m.user_id) AS author_name
+        FROM messages m
+        LEFT JOIN users u ON m.user_id = u.user_id
+        WHERE m.server_id = $1 AND m.channel_id = $2
+        ORDER BY m.message_id ASC
+    `;
     const values = [serverId, channelId];
     const result = await DatabaseClient.query(query, values);
     return result.rows;

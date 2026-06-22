@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { createLogger, Verbosity } from '../../config/debug';
-import { createInviteCodeDB, createServerDB, getInviteCodeByServerIdDB, getServersByUserIdDB, joinServerByInviteCodeDB} from "../../db/rivulet-main/serverDatabase";
+import { createInviteCodeDB, createServerDB, getInviteCodeByServerIdDB, getServersByUserIdDB, joinServerByInviteCodeDB, leaveServerDB } from "../../db/rivulet-main/serverDatabase";
+import { createChannelDB } from "../../db/rivulet-main/channelDatabase";
 
 const logger = createLogger("serverController", "controller");
 
@@ -13,9 +14,17 @@ export async function createServer(req: Request, res: Response, next: NextFuncti
         // Implementation for creating a server
         const { serverName } = req.body;
         const ownerId = req.session.userId;
-        
-        // Call database function to create server  
+
+        // Call database function to create server
         const newServer = await createServerDB(serverName, ownerId);
+
+        // Create default #general channel (matching InMemoryDB behavior)
+        await createChannelDB('general', newServer.server_id);
+
+        // Generate an invite code for the new server (matching InMemoryDB behavior)
+        const inviteCode = generateRandomInviteCode(16);
+        await createInviteCodeDB(newServer.server_id, inviteCode);
+
         const userServers = await getServersByUserIdDB(ownerId);
         res.status(200).json({ servers: userServers, created_server_id: newServer.server_id });
         logger.log(`Server created: ${JSON.stringify(newServer)}`, Verbosity.MEDIUM);
@@ -46,6 +55,23 @@ export async function joinServerFromInvite(req: Request, res: Response, next: Ne
     }
 }
 
+export async function leaveServer(req: Request, res: Response, next: NextFunction) {
+    if (!req.session.userId) {
+        logger.log(`Error: attempted to leave server without a logged in user.`, Verbosity.HIGH);
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
+    try {
+        const { serverId } = req.body;
+        const userId = req.session.userId;
+        await leaveServerDB(userId, serverId);
+        logger.log(`User ${userId} left server ID: ${serverId}`, Verbosity.MEDIUM);
+        res.status(200).json({ message: 'Left server successfully' });
+    } catch (error) {
+        logger.log(`Error leaving server: ${error}`, Verbosity.LOW);
+        next(error);
+    }
+}
+
 function generateRandomInviteCode(length: number = 16): string {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let result = '';
@@ -71,11 +97,11 @@ export async function getServerInviteCode(req: Request, res: Response, next: Nex
         if(!inviteCode) {
             const newInviteCode = generateRandomInviteCode(16);
             await createInviteCodeDB(serverId, newInviteCode);
-            res.status(200).json({ inviteCode: newInviteCode });
+            res.status(200).json({ invite_code: newInviteCode });
             logger.log(`Generated new invite code for server ID ${serverId}: ${newInviteCode}`, Verbosity.MEDIUM);
             return;
         }
-        res.status(200).json({ inviteCode: inviteCode });
+        res.status(200).json({ invite_code: inviteCode });
         logger.log(`Retrieved invite code for server ID ${serverId}: ${inviteCode}`, Verbosity.MEDIUM);
     } catch (error) {
         logger.log(`Error generating invite code: ${error}`, Verbosity.LOW);
