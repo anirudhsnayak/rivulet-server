@@ -19,11 +19,15 @@ test('PostgreSQL migration and HTTP feature parity', { skip: !connectionString }
       CREATE TABLE servers(server_id integer PRIMARY KEY DEFAULT nextval('server_id_seq'),server_name varchar(50) NOT NULL);
       CREATE TABLE server_members(user_id integer,server_id integer REFERENCES servers ON DELETE CASCADE,joined_at timestamp DEFAULT CURRENT_TIMESTAMP,PRIMARY KEY(user_id,server_id));
       CREATE TABLE channels(server_id integer REFERENCES servers ON DELETE CASCADE,channel_id integer,name varchar(100),PRIMARY KEY(server_id,channel_id));
+      CREATE TABLE server_invites(server_id integer PRIMARY KEY REFERENCES servers ON DELETE CASCADE,invite_code char(16) NOT NULL UNIQUE);
       INSERT INTO users VALUES(10,'legacy',repeat('a',64));
-      INSERT INTO servers VALUES(10,'legacy'); INSERT INTO server_members(user_id,server_id) VALUES(10,10);
+      INSERT INTO servers VALUES(10,'legacy'); INSERT INTO server_invites VALUES(10,'legacy-invite'); INSERT INTO server_members(user_id,server_id) VALUES(10,10);
       INSERT INTO channels VALUES(10,7,'legacy');`);
     await DB.query(migration);
     await DB.query(migration);
+    assert.equal((await DB.query('SELECT invite_code FROM server_invites WHERE server_id=10')).rows[0].invite_code, 'legacy-invite');
+    assert.equal((await DB.query('SELECT role FROM server_members WHERE server_id=10 AND user_id=10')).rows[0].role, 'member');
+    await DB.query('UPDATE server_invites SET invite_code=$1 WHERE server_id=10', ['a'.repeat(32)]);
     assert.equal((await DB.query('SELECT owner_id FROM servers WHERE server_id=10')).rows[0].owner_id, 10);
     assert.equal((await DB.query('SELECT max_id FROM channel_sequences WHERE server_id=10')).rows[0].max_id, 7);
     assert.equal((await DB.query('SELECT max_id FROM message_sequences WHERE server_id=10 AND channel_id=7')).rows[0].max_id, 0);

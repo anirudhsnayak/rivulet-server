@@ -6,6 +6,26 @@ Express 5 / PostgreSQL API for the Rivulet frontend. Supports accounts and cooki
 
 Stop the API before migrating. From this repository in PowerShell, using the existing Docker container:
 
+Start Docker Desktop, then run `npm run db:start` first. This command starts
+`rivulet-postgres` if it exists, or creates it using `.env` credentials, the
+`POSTGRES_PORT` setting (default 5432), and the persistent `rivulet-data` volume.
+New containers bind to localhost. Existing containers keep their original
+configuration and data. The command waits for PostgreSQL to become ready and
+can be rerun. It does not apply migrations. From the frontend directory, the
+same command is available as `npm run dev:db`.
+
+Stop the API, then apply the migration using the same `.env` database settings as the server:
+
+```powershell
+npm run db:migrate
+```
+
+Restart the API afterward. This adds missing membership roles and widens legacy
+`char(16)` invite codes to `varchar(256)`, preserving existing invites and accounts.
+From the frontend directory, use `npm run dev:db:migrate`.
+
+Alternatively, with Docker:
+
 ```powershell
 Get-Content -Raw ./db/migrations/001_feature_parity.sql | docker exec -i rivulet-postgres psql -v ON_ERROR_STOP=1 -U postgres -d rivulet-db
 ```

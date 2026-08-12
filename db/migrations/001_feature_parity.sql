@@ -51,6 +51,11 @@ CREATE TABLE IF NOT EXISTS public.server_invites (
   invite_code varchar(256) NOT NULL UNIQUE
 );
 
+-- CREATE TABLE IF NOT EXISTS does not upgrade columns on legacy tables.
+-- Preserve existing 16-character invites while allowing the API's 32-character codes.
+ALTER TABLE public.server_invites ALTER COLUMN invite_code TYPE varchar(256)
+  USING rtrim(invite_code::text);
+
 ALTER TABLE public.servers ADD COLUMN IF NOT EXISTS owner_id integer;
 ALTER TABLE public.server_members ADD COLUMN IF NOT EXISTS role varchar(10) NOT NULL DEFAULT 'member';
 -- The API derives 'creator' from servers.owner_id; there is one source of truth.
