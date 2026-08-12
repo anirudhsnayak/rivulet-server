@@ -1,5 +1,6 @@
 import express from 'express';
-import { channelRoutes, messageRoutes, serverRoutes, accountRoutes, userRoutes, memberRoutes, sseRoutes } from './routes';
+import accountRoutes from './routes/accountRoutes';
+import apiRoutes from './routes/apiRoutes';
 import { errorHandler } from './middlewares/errorHandler';
 import cors from 'cors';
 import DatabaseClient from './client/DatabaseClient';
@@ -19,7 +20,7 @@ app.use(cors({
 }));
 
 app.use(session({
-  secret: 'rivulet-key-aG91c2Vsb29zZX',   // use env var in production
+  secret: process.env.SESSION_SECRET || 'rivulet-key-aG91c2Vsb29zZX',
   resave: false,
   saveUninitialized: false,
   cookie: {
@@ -30,13 +31,8 @@ app.use(session({
 }));
 
 // Routes
-app.use('/api/server', serverRoutes);
-app.use('/api/channel', channelRoutes);
 app.use('/api/account', accountRoutes);
-app.use('/api/message', messageRoutes);
-app.use('/api/user', userRoutes);
-app.use('/api/member', memberRoutes);
-app.use('/api/sse', sseRoutes);
+app.use('/api', apiRoutes);
 
 // Global error handler (should be after routes)
 app.use(errorHandler);

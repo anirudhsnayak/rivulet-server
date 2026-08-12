@@ -10,7 +10,7 @@ export const errorHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  console.error(err);
+  if (!err.status || err.status >= 500) console.error(err);
   res.status(err.status || 500).json({
     message: err.message || 'Internal Server Error',
   });

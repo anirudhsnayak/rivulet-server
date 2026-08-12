@@ -7,8 +7,9 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "dev": "tsx --env-file=.env src/server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "tsx --env-file=.env src/server.ts",
+    "typecheck": "node node_modules/typescript/bin/tsc --noEmit",
+    "test": "tsx --test test/*.test.ts"
   },
   "devDependencies": {
     "@types/express": "^5.0.3",
